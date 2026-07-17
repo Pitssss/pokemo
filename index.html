@@ -6,7 +6,6 @@
 <title>Pokédex</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<<<<<<< HEAD
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Clash+Display:wght@600;700&family=Space+Mono:wght@400;700&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -15,16 +14,6 @@
     --land-dim: #c7a008;
     --sea: #3b4cca; /* Pokemon Blue */
     --sea-dim: #2a3a9d;
-=======
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    /* --- duotone: land vs sea --- */
-    --land: #d9633b;
-    --land-dim: #a84a2c;
-    --sea: #2f8fc4;
-    --sea-dim: #1f6a96;
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     --bg: #0a1a24;
     --bg-alt: #0e2632;
     --surface: #f2ead9;
@@ -34,12 +23,8 @@
     --line: rgba(242,234,217,0.12);
     --white: #fbf8f1;
 
-<<<<<<< HEAD
     --font-display: 'Press Start 2P', monospace;
     --font-header: 'Clash Display', sans-serif;
-=======
-    --font-display: 'Space Grotesk', sans-serif;
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     --font-body: 'Manrope', sans-serif;
     --font-mono: 'Space Mono', monospace;
 
@@ -65,11 +50,7 @@
     *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
 
-<<<<<<< HEAD
   ::selection{ background: var(--sea); color: var(--white); }
-=======
-  ::selection{ background: var(--land); color: var(--white); }
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 
   header.hero{
     position: relative;
@@ -90,7 +71,6 @@
     );
     pointer-events: none;
   }
-<<<<<<< HEAD
 
   h1.wordmark{
     font-family: var(--font-display);
@@ -175,57 +155,6 @@
     display: block;
   }
 
-=======
-  .eyebrow{
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--sea);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.9rem;
-  }
-  .eyebrow::before, .eyebrow::after{
-    content: "";
-    width: 22px; height: 1px;
-    background: linear-gradient(to right, transparent, var(--sea));
-  }
-  .eyebrow::after{ background: linear-gradient(to left, transparent, var(--land)); }
-
-  h1.wordmark{
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-  h1.wordmark .land{ color: var(--land); }
-  h1.wordmark .sea{ color: var(--sea); }
-  h1.wordmark .split{
-    display: inline-block;
-    width: 3px; height: 0.7em;
-    background: linear-gradient(to bottom, var(--land), var(--sea));
-    margin: 0 0.18em;
-    vertical-align: -0.05em;
-    border-radius: 2px;
-  }
-
-  .subtext{
-    margin-top: 0.85rem;
-    color: rgba(251,248,241,0.6);
-    font-size: 0.95rem;
-    max-width: 480px;
-    margin-left: auto; margin-right: auto;
-  }
-
-  .dex-count{
-    font-family: var(--font-mono);
-    color: var(--land);
-  }
-
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   /* ---------- controls ---------- */
   .controls{
     position: sticky;
@@ -358,15 +287,9 @@
   .card:hover .sprite-wrap img{ transform: scale(1.08) translateY(-2px); }
 
   .card .name{
-<<<<<<< HEAD
     font-family: var(--font-header);
     font-weight: 700;
     font-size: 1.1rem;
-=======
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.98rem;
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     color: var(--ink);
     margin-bottom: 0.5rem;
   }
@@ -418,11 +341,7 @@
     border-radius: 50%;
     background:
       linear-gradient(var(--white) 0 0) center/100% 34% no-repeat,
-<<<<<<< HEAD
       linear-gradient(to bottom, #ef5350 50%, var(--white) 50%);
-=======
-      linear-gradient(to bottom, var(--land) 50%, var(--white) 50%);
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     border: 3px solid var(--ink);
     position: relative;
     animation: spin 0.9s linear infinite;
@@ -440,7 +359,6 @@
   @keyframes spin{ to{ transform: rotate(360deg); } }
   .loader p{ font-family: var(--font-mono); font-size: 0.8rem; color: rgba(251,248,241,0.55); }
 
-<<<<<<< HEAD
   /* ---------- manual pagination styles ---------- */
   .pagination-wrap {
     display: flex;
@@ -859,16 +777,6 @@
     object-fit: cover;
     border-radius: 6px;
   }
-=======
-  #sentinel{
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    padding: 2.5rem 0 0.5rem;
-    min-height: 60px;
-  }
-  #sentinel.hidden{ display: none; }
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 
   /* ---------- modal ---------- */
   .modal-overlay{
@@ -891,13 +799,8 @@
     background: var(--surface);
     color: var(--ink);
     width: 100%;
-<<<<<<< HEAD
     max-width: 580px; 
     max-height: 92vh;
-=======
-    max-width: 420px;
-    max-height: 88vh;
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     overflow-y: auto;
     border-radius: 22px;
     position: relative;
@@ -942,13 +845,8 @@
     filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
   }
   .modal-hero h2{
-<<<<<<< HEAD
     font-family: var(--font-header);
     font-size: 1.6rem;
-=======
-    font-family: var(--font-display);
-    font-size: 1.5rem;
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     font-weight: 700;
   }
   .modal-hero .badges{ justify-content: center; margin-top: 0.55rem; }
@@ -971,11 +869,7 @@
     border-bottom: 1px dashed rgba(20,33,39,0.15);
   }
   .meta-item{ text-align: center; }
-<<<<<<< HEAD
   .meta-item .val{ font-family: var(--font-header); font-weight: 700; font-size: 1.1rem; }
-=======
-  .meta-item .val{ font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   .meta-item .lab{ font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(20,33,39,0.5); }
 
   .flavor{
@@ -994,53 +888,33 @@
     color: rgba(20,33,39,0.45);
     margin-bottom: 0.9rem;
   }
-<<<<<<< HEAD
   .stats .stat-row{
-=======
-  .stat-row{
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     display: grid;
     grid-template-columns: 70px 1fr 34px;
     align-items: center;
     gap: 0.7rem;
     margin-bottom: 0.6rem;
   }
-<<<<<<< HEAD
   .stats .stat-name{
-=======
-  .stat-row .stat-name{
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     font-family: var(--font-mono);
     font-size: 0.68rem;
     text-transform: uppercase;
     color: rgba(20,33,39,0.6);
   }
-<<<<<<< HEAD
   .stats .stat-track{
-=======
-  .stat-track{
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     height: 7px;
     border-radius: 999px;
     background: rgba(20,33,39,0.09);
     overflow: hidden;
   }
-<<<<<<< HEAD
   .stats .stat-fill{
-=======
-  .stat-fill{
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     height: 100%;
     border-radius: 999px;
     width: 0%;
     background: linear-gradient(to right, var(--sea), var(--land));
     transition: width 0.7s cubic-bezier(.2,.8,.2,1);
   }
-<<<<<<< HEAD
   .stats .stat-val{
-=======
-  .stat-row .stat-val{
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     font-family: var(--font-mono);
     font-size: 0.72rem;
     text-align: right;
@@ -1059,17 +933,13 @@
   @media (max-width: 480px){
     .controls{ border-radius: 20px; top: 10px; }
     .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.7rem; }
-<<<<<<< HEAD
     .memory-grid { gap: 0.4rem; }
-=======
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   }
 </style>
 </head>
 <body>
 
 <header class="hero">
-<<<<<<< HEAD
   <h1 class="wordmark"><span class="land">Poké</span><span class="split"></span><span class="sea">dex</span></h1>
   <p class="subtext">A modern interface of the entire Pokeverse  and beyond. Cataloged:1,025 <span class="dex-count" id="dexCount">0</span> species. <span id="dexRange" style="display:block; font-size:0.75rem; opacity:0.6; margin-top:0.3rem;"></span></p>
 </header>
@@ -1163,37 +1033,6 @@
 </footer>
 
 <!-- SYSTEM DATA POPUP MODAL OVERLAY -->
-=======
-  <span class="eyebrow" id="dexRange">National Dex</span>
-  <h1 class="wordmark"><span class="land">POKÉ</span><span class="split"></span><span class="sea">DEX</span></h1>
-  <p class="subtext">Every Pokémon ever discovered, scanned and catalogued &mdash; <span class="dex-count" id="dexCount">...</span> entries and counting.</p>
-</header>
-
-<div class="controls">
-  <div class="search-wrap">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"/></svg>
-    <input type="text" id="search" placeholder="Search by name..." autocomplete="off">
-  </div>
-  <select id="typeFilter">
-    <option value="">All Types</option>
-  </select>
-</div>
-
-<main>
-  <div class="grid" id="grid">
-    <div class="loader">
-      <div class="pokeball"></div>
-      <p>Connecting to the Pokédex network...</p>
-    </div>
-  </div>
-  <div id="sentinel" class="hidden">
-    <div class="pokeball small"></div>
-  </div>
-</main>
-
-<footer>Data via PokéAPI &middot; Built for trainers</footer>
-
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modalCard" role="dialog" aria-modal="true">
     <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
@@ -1222,7 +1061,6 @@
   };
   const DARK_TEXT_TYPES = new Set(["electric","ice","ground","fairy","normal"]);
   const ALL_TYPES = Object.keys(TYPE_COLORS).sort();
-<<<<<<< HEAD
   
   // Custom Pagination Config
   const BATCH_SIZE = 40;
@@ -1334,12 +1172,6 @@
   ];
 
   const gridEl = document.getElementById('grid');
-=======
-  const BATCH_SIZE = 40;
-
-  const gridEl = document.getElementById('grid');
-  const sentinelEl = document.getElementById('sentinel');
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   const searchEl = document.getElementById('search');
   const typeFilterEl = document.getElementById('typeFilter');
   const dexCountEl = document.getElementById('dexCount');
@@ -1352,7 +1184,6 @@
   const modalName = document.getElementById('modalName');
   const modalBadges = document.getElementById('modalBadges');
   const modalBody = document.getElementById('modalBody');
-<<<<<<< HEAD
   const modalHero = document.getElementById('modalHero');
 
   const prevPageBtn = document.getElementById('prevPageBtn');
@@ -1365,16 +1196,6 @@
 
   const detailsCache = new Map();   
   const typeMemberCache = new Map(); 
-=======
-
-  let masterList = [];           // [{id, name}] every species, in dex order
-  let filteredList = [];         // current search/type filtered subset
-  let renderedCount = 0;         // how many of filteredList are on screen
-  let currentFilter = { search: "", type: "" };
-
-  const detailsCache = new Map();   // id -> full pokemon detail
-  const typeMemberCache = new Map(); // type -> Set of names in that type
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 
   function pad(id){ return String(id).padStart(3, '0'); }
   function capitalize(str){
@@ -1392,14 +1213,9 @@
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
   }
 
-<<<<<<< HEAD
 async function fetchMasterList(){
     // Palitan ang limit mula 151 patungong 1025 (o 1025 para sa lahat ng kasalukuyang Pokémon)
     const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025'); 
-=======
-  async function fetchMasterList(){
-    const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=100000');
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     const data = await res.json();
     masterList = data.results.map(r => {
       const parts = r.url.split('/').filter(Boolean);
@@ -1458,26 +1274,18 @@ async function fetchMasterList(){
     let base = masterList;
     if(type){
       gridEl.innerHTML = `<div class="loader"><div class="pokeball"></div><p>Filtering by type...</p></div>`;
-<<<<<<< HEAD
-=======
-      sentinelEl.classList.add('hidden');
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
       const members = await getTypeMembers(type);
       base = base.filter(p => members.has(p.name));
     }
     filteredList = q ? base.filter(p => p.name.includes(q)) : base;
 
     dexCountEl.textContent = filteredList.length;
-<<<<<<< HEAD
     currentPage = 1; // Reset to page 1 on filter
-=======
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     resetGrid();
   }
 
   function resetGrid(){
     gridEl.innerHTML = '';
-<<<<<<< HEAD
     if(filteredList.length === 0){
       gridEl.innerHTML = `<div class="empty-state">No Pokémon match your search. Try a different name or type.</div>`;
       document.getElementById('paginationController').style.display = 'none';
@@ -1485,16 +1293,6 @@ async function fetchMasterList(){
     }
     document.getElementById('paginationController').style.display = 'flex';
     renderCurrentPageBatch();
-=======
-    renderedCount = 0;
-    if(filteredList.length === 0){
-      gridEl.innerHTML = `<div class="empty-state">No Pokémon match your search. Try a different name or type.</div>`;
-      sentinelEl.classList.add('hidden');
-      return;
-    }
-    sentinelEl.classList.remove('hidden');
-    loadNextBatch();
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   }
 
   function createCard(p){
@@ -1523,7 +1321,6 @@ async function fetchMasterList(){
     });
 
     card.addEventListener('click', () => openModal(p.id, p.name));
-<<<<<<< HEAD
 
     fetchDetail(p.id, p.name).then(detail => {
       const badgesEl = card.querySelector('.badges');
@@ -1531,24 +1328,11 @@ async function fetchMasterList(){
     }).catch(() => {
       const badgesEl = card.querySelector('.badges');
       if (badgesEl) badgesEl.innerHTML = '';
-=======
-    card.addEventListener('keydown', e => {
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModal(p.id, p.name); }
-    });
-
-    fetchDetail(p.id, p.name).then(detail => {
-      const badgesEl = card.querySelector('.badges');
-      badgesEl.innerHTML = detail.types.map(badgeHTML).join('');
-    }).catch(() => {
-      const badgesEl = card.querySelector('.badges');
-      badgesEl.innerHTML = '';
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     });
 
     return card;
   }
 
-<<<<<<< HEAD
   // Pure Manual Batch Calculator Mapping Logic
   function renderCurrentPageBatch(){
     gridEl.innerHTML = ''; // Clear prior elements
@@ -1559,22 +1343,12 @@ async function fetchMasterList(){
     const slice = filteredList.slice(startIndex, endIndex);
     const frag = document.createDocumentFragment();
     
-=======
-  function loadNextBatch(){
-    const slice = filteredList.slice(renderedCount, renderedCount + BATCH_SIZE);
-    if(slice.length === 0){
-      sentinelEl.classList.add('hidden');
-      return;
-    }
-    const frag = document.createDocumentFragment();
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     slice.forEach((p, i) => {
       const card = createCard(p);
       card.style.animationDelay = `${Math.min(i * 20, 300)}ms`;
       frag.appendChild(card);
     });
     gridEl.appendChild(frag);
-<<<<<<< HEAD
 
     // Update Pagination UI Elements Info
     pageInfoDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
@@ -1600,23 +1374,6 @@ async function fetchMasterList(){
       renderCurrentPageBatch();
     }
   });
-=======
-    renderedCount += slice.length;
-
-    if(renderedCount >= filteredList.length){
-      sentinelEl.classList.add('hidden');
-    } else {
-      sentinelEl.classList.remove('hidden');
-    }
-  }
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting) loadNextBatch();
-    });
-  }, { rootMargin: '400px' });
-  observer.observe(sentinelEl);
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 
   function statBarHTML(label, value, max){
     const pct = Math.min(100, Math.round((value / max) * 100));
@@ -1630,10 +1387,7 @@ async function fetchMasterList(){
   }
 
   async function openModal(id, name){
-<<<<<<< HEAD
     modalHero.style.display = "block";
-=======
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
     modalId.textContent = `#${pad(id)}`;
     modalImg.style.display = 'none';
     modalName.textContent = capitalize(name);
@@ -1698,7 +1452,6 @@ async function fetchMasterList(){
     }
   }
 
-<<<<<<< HEAD
   // --- MAP NODE COMPONENT ---
   function openRegionMapModal(region) {
     modalHero.style.display = "none";
@@ -1785,8 +1538,6 @@ async function fetchMasterList(){
     }
   }
 
-=======
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   function closeModal(){
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
@@ -1794,10 +1545,6 @@ async function fetchMasterList(){
 
   modalClose.addEventListener('click', closeModal);
   modalOverlay.addEventListener('click', e => { if(e.target === modalOverlay) closeModal(); });
-<<<<<<< HEAD
-=======
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
 
   let searchDebounce;
   searchEl.addEventListener('input', () => {
@@ -1813,7 +1560,6 @@ async function fetchMasterList(){
     recomputeFilter();
   });
 
-<<<<<<< HEAD
   /* NAVIGATION CONTROLLERS */
   document.querySelectorAll('.view-tabs .tab-pill').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2086,8 +1832,6 @@ async function fetchMasterList(){
   document.getElementById('memReset').addEventListener('click', initMemoryGame);
   document.getElementById('memPlayAgain').addEventListener('click', initMemoryGame);
 
-=======
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
   async function init(){
     try {
       await fetchMasterList();
@@ -2105,8 +1849,4 @@ async function fetchMasterList(){
 </script>
 
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 6a102c616727248f88708d613b2ef6ea921c6c9a
