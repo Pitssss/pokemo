@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokédex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Clash+Display:wght@600;700&family=Space+Mono:wght@400;700&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* --- duotone: land vs sea --- */
+    --land: #ffcb05; /* Pokemon Yellow */
+    --land-dim: #c7a008;
+    --sea: #3b4cca; /* Pokemon Blue */
+    --sea-dim: #2a3a9d;
+    --bg: #0a1a24;
+    --bg-alt: #0e2632;
+    --surface: #f2ead9;
+    --surface-dim: #e7dcc4;
+    --ink: #142127;
+    --ink-soft: #4a5a61;
+    --line: rgba(242,234,217,0.12);
+    --white: #fbf8f1;
+
+    --font-display: 'Press Start 2P', monospace;
+    --font-header: 'Clash Display', sans-serif;
+    --font-body: 'Manrope', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    font-family: var(--font-body);
+    background:
+      radial-gradient(ellipse at 15% -10%, rgba(217,99,59,0.16), transparent 45%),
+      radial-gradient(ellipse at 85% 0%, rgba(47,143,196,0.20), transparent 45%),
+      var(--bg);
+    color: var(--white);
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  ::selection{ background: var(--sea); color: var(--white); }
+
+  header.hero{
+    position: relative;
+    padding: 3.2rem 1.5rem 2.2rem;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero::before{
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+  }
+
+  h1.wordmark{
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 4.5vw, 2.5rem);
+    line-height: 1.4;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  h1.wordmark .land{ 
+    color: var(--sea); 
+    text-shadow: 
+      -3px -3px 0 var(--land),  
+       3px -3px 0 var(--land),
+      -3px  3px 0 var(--land),
+       3px  3px 0 var(--land);
+  }
+  h1.wordmark .sea{ 
+    color: var(--sea);
+    text-shadow: 
+      -3px -3px 0 var(--land),  
+       3px -3px 0 var(--land),
+      -3px  3px 0 var(--land),
+       3px  3px 0 var(--land);
+  }
+  h1.wordmark .split{
+    display: inline-block;
+    width: 6px; height: 0.7em;
+    background: var(--land);
+    margin: 0 0.2em;
+    vertical-align: -0.05em;
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--land);
+  }
+
+  .subtext{
+    margin-top: 1rem;
+    color: rgba(251,248,241,0.6);
+    font-size: 0.95rem;
+    max-width: 520px;
+    margin-left: auto; margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .dex-count{
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--land);
+  }
+
+  /* ---------- tab system navigation ---------- */
+  .view-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 2rem auto 1rem;
+    max-width: 600px;
+    padding: 0 1.5rem;
+    flex-wrap: wrap;
+  }
+  .tab-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    color: var(--white);
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    transition: all 0.2s ease;
+  }
+  .tab-pill.active {
+    background: var(--sea);
+    border-color: var(--land);
+    color: var(--white);
+    box-shadow: 0 0 15px rgba(59, 76, 202, 0.6);
+  }
+  .view {
+    display: none;
+  }
+  .view.active {
+    display: block;
+  }
+
+  /* ---------- controls ---------- */
+  .controls{
+    position: sticky;
+    top: 14px;
+    z-index: 20;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    margin: 0 auto;
+    max-width: 900px;
+    background: rgba(10,26,36,0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .search-wrap{
+    flex: 1 1 260px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-wrap svg{
+    position: absolute; left: 14px;
+    width: 16px; height: 16px;
+    stroke: rgba(251,248,241,0.45);
+    pointer-events: none;
+  }
+  #search{
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.4rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.05);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  #search::placeholder{ color: rgba(251,248,241,0.35); }
+  #search:focus{ border-color: var(--sea); background: rgba(255,255,255,0.08); }
+
+  #typeFilter{
+    padding: 0.7rem 2.2rem 0.7rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23fbf8f1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  #typeFilter:focus{ border-color: var(--land); }
+  #typeFilter option{ background: var(--bg-alt); color: var(--white); }
+
+  :focus-visible{ outline: 2px solid var(--sea); outline-offset: 2px; }
+
+  /* ---------- grid ---------- */
+  main{
+    max-width: 1240px;
+    margin: 2.4rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 1rem;
+  }
+
+  .card{
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1rem 0.9rem 0.9rem;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid transparent;
+    animation: rise 0.4s ease backwards;
+    transition: transform 0.22s cubic-bezier(.2,.8,.2,1), box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .card:hover, .card:focus-visible{
+    transform: translateY(-6px);
+    box-shadow: 0 18px 34px -14px rgba(0,0,0,0.55);
+    border-color: rgba(217,99,59,0.35);
+  }
+  .card:active{ transform: translateY(-2px) scale(0.99); }
+
+  @keyframes rise{
+    from{ opacity: 0; transform: translateY(14px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .card .id{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .card .sprite-wrap{
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(217,99,59,0.10), transparent 60%),
+      var(--surface-dim);
+    border-radius: var(--radius-sm);
+    margin: 0.4rem 0 0.6rem;
+    overflow: hidden;
+  }
+  .card .sprite-wrap img{
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    transition: transform 0.3s ease, opacity 0.25s ease;
+    opacity: 0;
+  }
+  .card .sprite-wrap img.loaded{ opacity: 1; }
+  .card:hover .sprite-wrap img{ transform: scale(1.08) translateY(-2px); }
+
+  .card .name{
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .badges{ display: flex; flex-wrap: wrap; gap: 0.35rem; min-height: 1.4rem; }
+  .badge{
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .badge-skeleton{
+    width: 44px; height: 1.1rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(20,33,39,0.08), rgba(20,33,39,0.15), rgba(20,33,39,0.08));
+    background-size: 200% 100%;
+    animation: shimmer 1.3s ease-in-out infinite;
+  }
+  @keyframes shimmer{
+    0%{ background-position: 200% 0; }
+    100%{ background-position: -200% 0; }
+  }
+
+  .empty-state{
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 1rem;
+    color: rgba(251,248,241,0.5);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  /* ---------- loading ---------- */
+  .loader{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    grid-column: 1 / -1;
+  }
+  .pokeball{
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background:
+      linear-gradient(var(--white) 0 0) center/100% 34% no-repeat,
+      linear-gradient(to bottom, #ef5350 50%, var(--white) 50%);
+    border: 3px solid var(--ink);
+    position: relative;
+    animation: spin 0.9s linear infinite;
+  }
+  .pokeball.small{ width: 28px; height: 28px; }
+  .pokeball::after{
+    content:"";
+    position: absolute; top:50%; left:50%;
+    width: 12px; height: 12px;
+    background: var(--white);
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .loader p{ font-family: var(--font-mono); font-size: 0.8rem; color: rgba(251,248,241,0.55); }
+
+  /* ---------- manual pagination styles ---------- */
+  .pagination-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .page-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    color: var(--white);
+    padding: 0.6rem 1.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    transition: all 0.2s ease;
+  }
+  .page-btn:hover:not(:disabled) {
+    background: var(--sea);
+    border-color: var(--land);
+  }
+  .page-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+  .page-info {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: rgba(251,248,241,0.6);
+  }
+
+  /* ---------- minigames layout & styling ---------- */
+  .game-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem auto;
+  }
+  .game-tabs .tab-pill {
+    font-size: 0.55rem;
+    padding: 0.4rem 1.1rem;
+    background: transparent;
+  }
+  .game-tabs .tab-pill.active {
+    background: #ef5350;
+    border-color: #ef5350;
+    box-shadow: 0 0 15px rgba(239, 83, 80, 0.4);
+  }
+  .game-panel {
+    display: none;
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .game-panel.active {
+    display: block;
+  }
+
+  /* Who's That Pokemon Styles */
+  .wtp-card {
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .wtp-stage {
+    background: radial-gradient(circle, var(--sea) 20%, var(--bg-alt) 100%);
+    border: 4px solid #ffcb05;
+    border-radius: var(--radius-sm);
+    padding: 2rem;
+    position: relative;
+    margin-bottom: 1.5rem;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wtp-image {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    transition: filter 0.3s ease, opacity 0.2s ease;
+    opacity: 0; 
+  }
+  .wtp-image.loaded {
+    opacity: 1; 
+  }
+  .silhouette {
+    filter: brightness(0) invert(0);
+  }
+  .wtp-id {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: var(--font-mono);
+    color: rgba(255,255,255,0.4);
+    font-size: 0.8rem;
+  }
+  .btn {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #ef5350; color: var(--white); }
+  .btn-primary:hover { background: #d32f2f; }
+  .btn-secondary { background: var(--sea); color: var(--white); }
+  .btn-secondary:hover { background: var(--sea-dim); }
+  .btn-ghost { background: rgba(20,33,39,0.08); color: var(--ink); }
+  .btn-ghost:hover { background: rgba(20,33,39,0.15); }
+  
+  .wtp-guess-row {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .wtp-input {
+    flex: 1;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid rgba(20,33,39,0.2);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+  }
+  .wtp-message {
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0.5rem 0 1rem;
+    min-height: 1.5rem;
+  }
+  .hidden { display: none !important; }
+
+  /* Memory Match Styles */
+  .memory-card-wrap {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .memory-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    background: rgba(255,255,255,0.03);
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+  }
+  .memory-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .memory-stat .val { font-family: var(--font-display); font-size: 1rem; color: var(--land); margin-bottom: 0.2rem; }
+  .memory-stat .lab { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: rgba(251,248,241,0.4); }
+  .memory-stats .btn-ghost { color: var(--white); background: rgba(255,255,255,0.05); border: 1px solid var(--line); }
+  .memory-stats .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+  
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    perspective: 800px;
+  }
+  .memory-tile {
+    aspect-ratio: 1;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+  }
+  .memory-tile.flipped {
+    transform: rotateY(180deg);
+  }
+  .memory-card-front, .memory-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .memory-card-back {
+    background: #3b4cca;
+    border: 2px solid #ffcb05;
+    background-image: radial-gradient(circle, var(--white) 15%, transparent 16%),
+                      radial-gradient(circle, var(--ink) 22%, transparent 23%),
+                      linear-gradient(to bottom, #ef5350 48%, var(--ink) 48%, var(--ink) 52%, var(--white) 52%);
+  }
+  .memory-card-front {
+    background: var(--surface);
+    transform: rotateY(180deg);
+    padding: 10%;
+  }
+  .memory-card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .memory-win {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(76,175,80,0.15);
+    border: 1px solid #4caf50;
+    border-radius: var(--radius-sm);
+  }
+  .memory-win p { font-family: var(--font-header); font-weight:700; font-size: 1.1rem; margin-bottom: 0.8rem; }
+
+  /* ---------- regions map layout & styling ---------- */
+  .regions-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .regions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .region-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    cursor: pointer;
+  }
+  .region-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.06);
+    border-color: var(--sea);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  }
+  .region-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.5rem;
+  }
+  .region-name {
+    font-family: var(--font-header);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--land);
+  }
+  .region-gen {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--sea);
+    text-transform: uppercase;
+  }
+  .region-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(251,248,241,0.7);
+  }
+  .region-meta {
+    margin-top: auto;
+    background: rgba(0,0,0,0.2);
+    padding: 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+  }
+  .region-meta div {
+    margin-bottom: 0.3rem;
+  }
+  .region-meta div:last-child {
+    margin-bottom: 0;
+  }
+  .region-meta strong {
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  .region-action-hint {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--sea);
+    text-align: right;
+    margin-top: 0.2rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* FULL PURE HTML/CSS DYNAMIC HOENN ENGINE RETRO MAP */
+  .interactive-map-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-sm);
+    border: 3px solid #1c3644;
+    background: #5080c8; 
+    background-image: 
+      radial-gradient(farthest-corner at 0% 20%, #70c860 0%, #58b048 60%, transparent 61%),
+      radial-gradient(farthest-corner at 70% 10%, #7dcf6d 0%, #58b048 45%, transparent 46%),
+      radial-gradient(circle at 85% 75%, #a8c850 0%, #68b048 20%, transparent 22%),
+      radial-gradient(circle at 45% 85%, #68b048 0%, #58b048 15%, transparent 17%);
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+  }
+
+  .map-route-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  .map-track-line {
+    position: absolute;
+    background: #e89030;
+    border: 2px solid #a05010;
+  }
+
+  .map-hotspots-container {
+    position: absolute;
+    inset: 0;
+  }
+
+  .map-hotspot {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background: #c83838; 
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.6);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.15s;
+  }
+
+  .map-hotspot:hover {
+    transform: scale(1.3);
+    background: #ffcb05; 
+    box-shadow: 0 0 12px #ffcb05;
+  }
+
+  .map-hotspot.rect {
+    width: 36px;
+    height: 20px;
+    border-radius: 6px;
+    background: #a85838; 
+  }
+
+  .map-tooltip {
+    position: absolute;
+    bottom: 140%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: #142127;
+    color: #fbf8f1;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 20;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .map-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #142127 transparent transparent transparent;
+  }
+
+  .map-hotspot:hover .map-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .region-map-display {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    border: 2px solid rgba(20,33,39,0.1);
+    margin: 1rem 0;
+    background: #142127;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .region-map-display img {
+    width: 100%;
+    max-height: 240px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position: fixed; inset: 0;
+    background: rgba(6,14,20,0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  .modal-overlay.open{ opacity: 1; pointer-events: auto; }
+
+  .modal{
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+    max-width: 580px; 
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 22px;
+    position: relative;
+    transform: translateY(18px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+  .modal-overlay.open .modal{ transform: translateY(0) scale(1); }
+
+  .modal-close{
+    position: absolute; top: 14px; right: 14px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(20,33,39,0.08);
+    color: var(--ink);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .modal-close:hover{ background: rgba(20,33,39,0.16); transform: rotate(90deg); }
+
+  .modal-hero{
+    padding: 2.2rem 1.5rem 1.2rem;
+    text-align: center;
+    position: relative;
+    border-radius: 22px 22px 0 0;
+    min-height: 240px;
+  }
+  .modal-hero .id{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: rgba(20,33,39,0.5);
+  }
+  .modal-hero img{
+    width: 150px; height: 150px;
+    object-fit: contain;
+    margin: 0.4rem auto 0.6rem;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
+  }
+  .modal-hero h2{
+    font-family: var(--font-header);
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .modal-hero .badges{ justify-content: center; margin-top: 0.55rem; }
+
+  .modal-body{ padding: 1.4rem 1.6rem 1.8rem; }
+
+  .modal-loading{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+  }
+
+  .meta-row{
+    display: flex;
+    justify-content: center;
+    gap: 2.2rem;
+    padding-bottom: 1.3rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 1px dashed rgba(20,33,39,0.15);
+  }
+  .meta-item{ text-align: center; }
+  .meta-item .val{ font-family: var(--font-header); font-weight: 700; font-size: 1.1rem; }
+  .meta-item .lab{ font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(20,33,39,0.5); }
+
+  .flavor{
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: rgba(20,33,39,0.72);
+    margin-bottom: 1.4rem;
+    min-height: 1.5em;
+  }
+
+  .stats h3{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgba(20,33,39,0.45);
+    margin-bottom: 0.9rem;
+  }
+  .stats .stat-row{
+    display: grid;
+    grid-template-columns: 70px 1fr 34px;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.6rem;
+  }
+  .stats .stat-name{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    color: rgba(20,33,39,0.6);
+  }
+  .stats .stat-track{
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(20,33,39,0.09);
+    overflow: hidden;
+  }
+  .stats .stat-fill{
+    height: 100%;
+    border-radius: 999px;
+    width: 0%;
+    background: linear-gradient(to right, var(--sea), var(--land));
+    transition: width 0.7s cubic-bezier(.2,.8,.2,1);
+  }
+  .stats .stat-val{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-align: right;
+    color: rgba(20,33,39,0.7);
+  }
+
+  footer{
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: rgba(251,248,241,0.3);
+    margin-top: 3.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 480px){
+    .controls{ border-radius: 20px; top: 10px; }
+    .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.7rem; }
+    .memory-grid { gap: 0.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="wordmark"><span class="land">Poké</span><span class="split"></span><span class="sea">dex</span></h1>
+  <p class="subtext">A modern interface of the entire Pokeverse  and beyond. Cataloged:1,025 <span class="dex-count" id="dexCount">0</span> species. <span id="dexRange" style="display:block; font-size:0.75rem; opacity:0.6; margin-top:0.3rem;"></span></p>
+</header>
+
+<nav class="tab-group view-tabs">
+  <button class="tab-pill active" data-view="pokedexView" type="button">Pokédex</button>
+  <button class="tab-pill" data-view="minigamesView" type="button">Minigames</button>
+  <button class="tab-pill" data-view="mapView" type="button">Regions Map</button>
+</nav>
+
+<!-- POKEDEX TAB -->
+<div id="pokedexView" class="view active">
+  <div class="controls">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="search" placeholder="Search Pokémon by name..." autocomplete="off">
+    </div>
+    <select id="typeFilter">
+      <option value="">All Types</option>
+    </select>
+  </div>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    
+    <!-- New Manual Pagination UI Block -->
+    <div class="pagination-wrap" id="paginationController">
+      <button class="page-btn" id="prevPageBtn" type="button">← Back</button>
+      <span class="page-info" id="pageInfoDisplay">Page 1 of 4</span>
+      <button class="page-btn" id="nextPageBtn" type="button">Next →</button>
+    </div>
+  </main>
+</div>
+
+<!-- MINIGAMES TAB -->
+<div id="minigamesView" class="view">
+  <div class="tab-group game-tabs" role="tablist" aria-label="Minigames">
+    <button class="tab-pill active" data-game="whosthat" type="button" role="tab" aria-selected="true">Who's That Pokémon?</button>
+    <button class="tab-pill" data-game="memory" type="button" role="tab" aria-selected="false">Memory Match</button>
+  </div>
+
+  <section id="whosthatGame" class="game-panel active">
+    <div class="wtp-card">
+      <div class="wtp-stage">
+        <img id="wtpImage" class="wtp-image silhouette" src="" alt="Mystery Pokémon">
+        <span class="wtp-id" id="wtpId"></span>
+      </div>
+
+      <audio id="wtpAudio" preload="auto" src="https://www.myinstants.com/media/sounds/whos-that-pokemon_.mp3"></audio>
+      <audio id="pokemonCryAudio" preload="auto"></audio>
+
+      <div class="wtp-controls">
+        <button id="wtpPlaySound" class="btn btn-ghost" type="button">🔊 Play Sound</button>
+        <div class="wtp-guess-row">
+          <input type="text" id="wtpInput" class="wtp-input" placeholder="Who's that Pokémon?" autocomplete="off">
+          <button id="wtpGuessBtn" class="btn btn-primary" type="button">Guess</button>
+        </div>
+        <p id="wtpMessage" class="wtp-message" aria-live="polite"></p>
+        <button id="wtpNextBtn" class="btn btn-secondary hidden" type="button">Next Pokémon →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="memoryGame" class="game-panel">
+    <div class="memory-card-wrap">
+      <div class="memory-stats">
+        <div class="memory-stat"><span class="val" id="memMoves">0</span><span class="lab">Moves</span></div>
+        <div class="memory-stat"><span class="val" id="memPairs">0/8</span><span class="lab">Pairs</span></div>
+        <button id="memReset" class="btn btn-ghost" type="button">↻ New Game</button>
+      </div>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <div class="memory-win hidden" id="memoryWin">
+        <p>🎉 You caught 'em all! Solved in <span id="memFinalMoves">0</span> moves.</p>
+        <button id="memPlayAgain" class="btn btn-primary" type="button">Play Again</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- REGIONS MAP TAB -->
+<div id="mapView" class="view">
+  <div class="regions-container">
+    <div class="regions-grid" id="regionsGrid">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+</div>
+
+<footer>
+  Pokédex System Engine v4.5 // Built for Masters
+</footer>
+
+<!-- SYSTEM DATA POPUP MODAL OVERLAY -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalCard" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-hero" id="modalHero">
+      <div class="id" id="modalId"></div>
+      <img id="modalImg" src="" alt="" style="display:none;">
+      <h2 id="modalName"></h2>
+      <div class="badges" id="modalBadges"></div>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="modal-loading"><div class="pokeball small"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const TYPE_COLORS = {
+    normal:"#A8A878", fire:"#F08030", water:"#6890F0", electric:"#F0C020",
+    grass:"#78C850", ice:"#98D8D8", fighting:"#C03028", poison:"#A040A0",
+    ground:"#E0C068", flying:"#A890F0", psychic:"#F85888", bug:"#A8B820",
+    rock:"#B8A038", ghost:"#705898", dragon:"#7038F8", dark:"#705848",
+    steel:"#B8B8D0", fairy:"#EE99AC"
+  };
+  const DARK_TEXT_TYPES = new Set(["electric","ice","ground","fairy","normal"]);
+  const ALL_TYPES = Object.keys(TYPE_COLORS).sort();
+  
+  // Custom Pagination Config
+  const BATCH_SIZE = 40;
+  let currentPage = 1;
+
+  let activeGameSubTab = "whosthat"; 
+
+  const REGIONS_DATA = [
+    { 
+      name: "Kanto", 
+      gen: "Generation I", 
+      desc: "The very first region in the Pokémon franchise, heavily based on the real-world Kantō region of Japan. Its layout is linear, rural, yet holds massive industrial hubs like Saffron City.", 
+      starters: "Bulbasaur, Charmander, Squirtle", 
+      feature: "Indigo Plateau Gym Challenge & Team Rocket Crisis",
+      mapUrl: "https://images.shoutwiki.com/pokemmo/e/e8/Map_Kanto.png", 
+      interactive: false
+    },
+    { 
+      name: "Johto", 
+      gen: "Generation II", 
+      desc: "Located directly west of Kanto, Johto is deeply traditional, historical, and heavily influenced by classical Japanese structures. Sikat sa traditional landmarks like the Tin Tower.", 
+      starters: "Chikorita, Cyndaquil, Totodile", 
+      feature: "Ruins of Alph Mysteries & Mt. Silver Legendaries",
+      mapUrl: "https://www.serebii.net/pokearth/johto.png",
+      interactive: false
+    },
+    { 
+      name: "Hoenn", 
+      gen: "Generation III", 
+      desc: "An expansive, nature-filled archipelago region rich in distinct biomes, active volcanoes, and massive ocean networks. Hoenn features a retro-style network of beautiful grid pathways.", 
+      starters: "Treecko, Torchic, Mudkip", 
+      feature: "Super Secret Bases, Contests & Weather Systems",
+      mapUrl: "", 
+      interactive: true 
+    },
+    { 
+      name: "Sinnoh", 
+      gen: "Generation IV", 
+      desc: "A vast, mountainous, and colder northern territory split directly down the middle by the majestic Mt. Coronet. The geographical birthplace of legendary space-time mythologies.", 
+      starters: "Turtwig, Chimchar, Piplup", 
+      feature: "The Grand Underground Explorations & Distortion Gateways",
+      mapUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop",
+      interactive: false
+    },
+    { 
+      name: "Unova", 
+      gen: "Generation V", 
+      desc: "The very first core series region modeled entirely away from Japan, inspired directly by New York City, USA. Features mega metropolitan structures and amusement parks.", 
+      starters: "Snivy, Tepig, Oshawott", 
+      feature: "Entralink operations & The Pokémon World Tournament arena",
+      mapUrl: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&auto=format&fit=crop",
+      interactive: false
+    },
+    { 
+      name: "Kalos", 
+      gen: "Generation VI", 
+      desc: "A star-shaped coastal territory modeled gracefully after northern France. Kalos is treated as a global epicenter of high-end art, royal architecture, and modern boutique fashion.", 
+      starters: "Chespin, Fennekin, Froakie", 
+      feature: "The Ancient Core of Mega Evolution Technology",
+      mapUrl: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&auto=format&fit=crop",
+      interactive: false
+    },
+    { 
+      name: "Alola", 
+      gen: "Generation VII", 
+      desc: "A vibrant resort archipelago paradise comprised of four separate natural islands alongside an artificial safehouse network. Traditional Pokémon Gym networks do not exist here.", 
+      starters: "Rowlet, Litten, Popplio", 
+      feature: "The Sovereign Island Kahuna Trials & Devastating Z-Moves",
+      mapUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
+      interactive: false
+    },
+    { 
+      name: "Galar", 
+      gen: "Generation VIII", 
+      desc: "An island nation styled beautifully around the United Kingdom. Home to massive industrial factory networks and coliseum-sized gym arenas packed with cheering fans.", 
+      starters: "Grookey, Scorbunny, Sobble", 
+      feature: "The Colossal Phenomenon of Dynamax & Gigantamax battles",
+      mapUrl: "https://images.unsplash.com/photo-1513635269975-59663e0ca1ad?w=600&auto=format&fit=crop", 
+      interactive: false
+    },
+    { 
+      name: "Paldea", 
+      gen: "Generation IX", 
+      desc: "An expansive open-world continent based around the real-world Iberian Peninsula. A gigantic anomalous deep crater rests right in the center, leaking paradox energy.", 
+      starters: "Sprigatito, Fuecoco, Quaxly", 
+      feature: "The Gemstone Brilliance of the Terastal Battle Shift",
+      mapUrl: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=600&auto=format&fit=crop",
+      interactive: false
+    }
+  ];
+
+  const HOENN_HOTSPOTS = [
+    { name: "Rustboro City", x: "11%", y: "25%", type: "city", desc: "A large city constructed of brick and stone. Home of Roxanne (Rock-type Gym Leader) and Devon Corporation." },
+    { name: "Petalburg Woods", x: "11%", y: "45%", type: "route", desc: "A thick forest spanning between Petalburg and Rustboro. Infested with Bug-type Pokémon." },
+    { name: "Petalburg City", x: "14%", y: "66%", type: "city", desc: "Your father, Norman's Gym is located here. A peaceful town nestled between woods and lakes." },
+    { name: "Littleroot Town", x: "14%", y: "94%", type: "city", desc: "Your sweet hometown and the base of Professor Birch's Pokémon Lab." },
+    { name: "Oldale Town", x: "27%", y: "66%", type: "city", desc: "A quiet, small junction town connecting Littleroot Town to Petalburg and Route 103." },
+    { name: "Dewford Town", x: "14%", y: "77%", type: "city", desc: "A tiny island town in the south. Brawly's Fighting Gym is situated here alongside Granite Cave." },
+    { name: "Slateport City", x: "53%", y: "77%", type: "city", desc: "A massive port city hosting a grand Oceanic Museum, Slateport Market, and Pokémon Contest Hall." },
+    { name: "Mauville City", x: "53%", y: "45%", type: "city", desc: "The bustling high-tech heart of Hoenn. Home of Wattson's Electric Gym and the Cycling Road." },
+    { name: "Verdanturf Town", x: "39%", y: "45%", type: "city", desc: "A windswept highlands town famous for clean, soothing air suitable for weak lungs." },
+    { name: "Fallarbor Town", x: "39%", y: "10%", type: "city", desc: "A farming community constantly covered in volcanic ash from nearby Mt. Chimney." },
+    { name: "Lavaridge Town", x: "53%", y: "22%", type: "city", desc: "A hot-spring town located directly on the slopes of Mt. Chimney. Led by Flannery (Fire Gym)." },
+    { name: "Fortree City", x: "79%", y: "10%", type: "city", desc: "A treetop forest village where residents live in treehouses. Winona's Flying Gym guards this area." },
+    { name: "Lilycove City", x: "92%", y: "25%", type: "city", desc: "A massive ocean-side city with a grand Department Store, Art Museum, and the Team Aqua/Magma Hideout." },
+    { name: "Mossdeep City", x: "92%", y: "42%", type: "city", desc: "An island space station center. Home of Tate & Liza (Psychic Gym Leaders)." },
+    { name: "Sootopolis City", x: "85%", y: "59%", type: "city", desc: "A city built inside a colossal volcanic crater. Guarded by Wallace/Juan and home of the Cave of Origin." },
+    { name: "Ever Grande City", x: "95%", y: "83%", type: "city", desc: "The final flower-filled island gateway leading straight into Victory Road and the Elite Four Pokémon League." },
+  ];
+
+  const gridEl = document.getElementById('grid');
+  const searchEl = document.getElementById('search');
+  const typeFilterEl = document.getElementById('typeFilter');
+  const dexCountEl = document.getElementById('dexCount');
+  const dexRangeEl = document.getElementById('dexRange');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalClose = document.getElementById('modalClose');
+  const modalId = document.getElementById('modalId');
+  const modalImg = document.getElementById('modalImg');
+  const modalName = document.getElementById('modalName');
+  const modalBadges = document.getElementById('modalBadges');
+  const modalBody = document.getElementById('modalBody');
+  const modalHero = document.getElementById('modalHero');
+
+  const prevPageBtn = document.getElementById('prevPageBtn');
+  const nextPageBtn = document.getElementById('nextPageBtn');
+  const pageInfoDisplay = document.getElementById('pageInfoDisplay');
+
+  let masterList = [];           
+  let filteredList = [];         
+  let currentFilter = { search: "", type: "" };
+
+  const detailsCache = new Map();   
+  const typeMemberCache = new Map(); 
+
+  function pad(id){ return String(id).padStart(3, '0'); }
+  function capitalize(str){
+    return str.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  }
+  function badgeHTML(type){
+    const bg = TYPE_COLORS[type] || "#999";
+    const color = DARK_TEXT_TYPES.has(type) ? "rgba(20,33,39,0.85)" : "#fbf8f1";
+    return `<span class="badge" style="background:${bg}; color:${color};">${type}</span>`;
+  }
+  function artworkUrl(id){
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  }
+  function fallbackSpriteUrl(id){
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+  }
+
+async function fetchMasterList(){
+    // Palitan ang limit mula 151 patungong 1025 (o 1025 para sa lahat ng kasalukuyang Pokémon)
+    const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025'); 
+    const data = await res.json();
+    masterList = data.results.map(r => {
+      const parts = r.url.split('/').filter(Boolean);
+      const id = Number(parts[parts.length - 1]);
+      return { id, name: r.name };
+    }).sort((a,b) => a.id - b.id);
+
+    dexCountEl.textContent = masterList.length;
+    dexRangeEl.textContent = `National Dex #001–${pad(masterList[masterList.length - 1].id)}`;
+  }
+
+  function populateTypeFilter(){
+    ALL_TYPES.forEach(type => {
+      const opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = capitalize(type);
+      typeFilterEl.appendChild(opt);
+    });
+  }
+
+  async function getTypeMembers(type){
+    if(typeMemberCache.has(type)) return typeMemberCache.get(type);
+    const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+    const data = await res.json();
+    const names = new Set(data.pokemon.map(p => p.pokemon.name));
+    typeMemberCache.set(type, names);
+    return names;
+  }
+
+  async function fetchDetail(id, name){
+    if(detailsCache.has(id)) return detailsCache.get(id);
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+    const data = await res.json();
+    const detail = {
+      id: data.id,
+      name: data.name,
+      types: data.types.map(t => t.type.name),
+      height: data.height,
+      weight: data.weight,
+      ability: data.abilities && data.abilities.length ? data.abilities[0].ability.name : "unknown",
+      stats: {
+        hp: data.stats.find(s => s.stat.name === 'hp').base_stat,
+        attack: data.stats.find(s => s.stat.name === 'attack').base_stat,
+        defense: data.stats.find(s => s.stat.name === 'defense').base_stat,
+        speed: data.stats.find(s => s.stat.name === 'speed').base_stat,
+      }
+    };
+    detailsCache.set(id, detail);
+    return detail;
+  }
+
+  async function recomputeFilter(){
+    const { search, type } = currentFilter;
+    const q = search.toLowerCase().trim();
+
+    let base = masterList;
+    if(type){
+      gridEl.innerHTML = `<div class="loader"><div class="pokeball"></div><p>Filtering by type...</p></div>`;
+      const members = await getTypeMembers(type);
+      base = base.filter(p => members.has(p.name));
+    }
+    filteredList = q ? base.filter(p => p.name.includes(q)) : base;
+
+    dexCountEl.textContent = filteredList.length;
+    currentPage = 1; // Reset to page 1 on filter
+    resetGrid();
+  }
+
+  function resetGrid(){
+    gridEl.innerHTML = '';
+    if(filteredList.length === 0){
+      gridEl.innerHTML = `<div class="empty-state">No Pokémon match your search. Try a different name or type.</div>`;
+      document.getElementById('paginationController').style.display = 'none';
+      return;
+    }
+    document.getElementById('paginationController').style.display = 'flex';
+    renderCurrentPageBatch();
+  }
+
+  function createCard(p){
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${capitalize(p.name)} details`);
+    card.dataset.id = p.id;
+    card.dataset.name = p.name;
+
+    card.innerHTML = `
+      <div class="id">#${pad(p.id)}</div>
+      <div class="sprite-wrap"><img alt="${p.name}" loading="lazy"></div>
+      <div class="name">${capitalize(p.name)}</div>
+      <div class="badges"><span class="badge-skeleton"></span><span class="badge-skeleton"></span></div>
+    `;
+
+    const img = card.querySelector('img');
+    img.src = artworkUrl(p.id);
+    img.addEventListener('load', () => img.classList.add('loaded'));
+    img.addEventListener('error', () => {
+      if(img.src !== fallbackSpriteUrl(p.id)){
+        img.src = fallbackSpriteUrl(p.id);
+      }
+    });
+
+    card.addEventListener('click', () => openModal(p.id, p.name));
+
+    fetchDetail(p.id, p.name).then(detail => {
+      const badgesEl = card.querySelector('.badges');
+      if (badgesEl) badgesEl.innerHTML = detail.types.map(badgeHTML).join('');
+    }).catch(() => {
+      const badgesEl = card.querySelector('.badges');
+      if (badgesEl) badgesEl.innerHTML = '';
+    });
+
+    return card;
+  }
+
+  // Pure Manual Batch Calculator Mapping Logic
+  function renderCurrentPageBatch(){
+    gridEl.innerHTML = ''; // Clear prior elements
+    const startIndex = (currentPage - 1) * BATCH_SIZE;
+    const endIndex = startIndex + BATCH_SIZE;
+    const totalPages = Math.ceil(filteredList.length / BATCH_SIZE) || 1;
+
+    const slice = filteredList.slice(startIndex, endIndex);
+    const frag = document.createDocumentFragment();
+    
+    slice.forEach((p, i) => {
+      const card = createCard(p);
+      card.style.animationDelay = `${Math.min(i * 20, 300)}ms`;
+      frag.appendChild(card);
+    });
+    gridEl.appendChild(frag);
+
+    // Update Pagination UI Elements Info
+    pageInfoDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+    
+    // Scroll smoothly to top of grid display
+    window.scrollTo({ top: document.querySelector('.controls').offsetTop - 20, behavior: 'smooth' });
+  }
+
+  // Connect Pagination Event Triggers
+  prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderCurrentPageBatch();
+    }
+  });
+
+  nextPageBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(filteredList.length / BATCH_SIZE);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderCurrentPageBatch();
+    }
+  });
+
+  function statBarHTML(label, value, max){
+    const pct = Math.min(100, Math.round((value / max) * 100));
+    return `
+      <div class="stat-row">
+        <div class="stat-name">${label}</div>
+        <div class="stat-track"><div class="stat-fill" style="width:0%" data-target="${pct}"></div></div>
+        <div class="stat-val">${value}</div>
+      </div>
+    `;
+  }
+
+  async function openModal(id, name){
+    modalHero.style.display = "block";
+    modalId.textContent = `#${pad(id)}`;
+    modalImg.style.display = 'none';
+    modalName.textContent = capitalize(name);
+    modalBadges.innerHTML = '';
+    modalBody.innerHTML = `<div class="modal-loading"><div class="pokeball small"></div></div>`;
+
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    try {
+      const detail = await fetchDetail(id, name);
+
+      modalImg.src = artworkUrl(id);
+      modalImg.style.display = 'block';
+      modalBadges.innerHTML = detail.types.map(badgeHTML).join('');
+
+      modalBody.innerHTML = `
+        <div class="meta-row">
+          <div class="meta-item"><div class="val">${(detail.height / 10).toFixed(1)} m</div><div class="lab">Height</div></div>
+          <div class="meta-item"><div class="val">${(detail.weight / 10).toFixed(1)} kg</div><div class="lab">Weight</div></div>
+          <div class="meta-item"><div class="val">${capitalize(detail.ability)}</div><div class="lab">Ability</div></div>
+        </div>
+        <p class="flavor" id="modalFlavor">Loading entry...</p>
+        <div class="stats">
+          <h3>Base Stats</h3>
+          <div id="statRows">
+            ${statBarHTML('HP', detail.stats.hp, 255)}
+            ${statBarHTML('ATK', detail.stats.attack, 255)}
+            ${statBarHTML('DEF', detail.stats.defense, 255)}
+            ${statBarHTML('SPD', detail.stats.speed, 255)}
+          </div>
+        </div>
+      `;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          modalBody.querySelectorAll('.stat-fill').forEach(fill => {
+            fill.style.width = fill.dataset.target + '%';
+          });
+        });
+      });
+
+      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          const entry = data.flavor_text_entries.find(e => e.language.name === 'en');
+          const flavorEl = document.getElementById('modalFlavor');
+          if(flavorEl){
+            flavorEl.textContent = entry
+              ? entry.flavor_text.replace(/[\n\f\r]/g, ' ')
+              : 'No entry available for this Pokémon.';
+          }
+        })
+        .catch(() => {
+          const flavorEl = document.getElementById('modalFlavor');
+          if(flavorEl) flavorEl.textContent = 'Entry unavailable right now.';
+        });
+
+    } catch(err){
+      modalBody.innerHTML = `<p class="flavor">Couldn't load this entry. Please try again.</p>`;
+      console.error(err);
+    }
+  }
+
+  // --- MAP NODE COMPONENT ---
+  function openRegionMapModal(region) {
+    modalHero.style.display = "none";
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    stopWtpAudio();
+
+    if (region.interactive) {
+      modalBody.innerHTML = `
+        <div style="margin-top: 0.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.7rem; border-bottom:2px solid var(--ink);">
+            <h2 style="font-family:var(--font-header); font-weight:700; font-size:1.8rem; color:var(--land);">${region.name} Region</h2>
+            <span style="font-family:var(--font-mono); font-size:0.85rem; color:var(--sea); font-weight:bold;">${region.gen}</span>
+          </div>
+          
+          <p style="font-size:0.8rem; color:var(--ink-soft); font-family:var(--font-mono); margin-bottom:0.5rem;">🗺️ Hover over route markers / towns & click to scan data records.</p>
+
+          <div class="interactive-map-wrapper">
+            <div class="map-route-layer">
+              <div class="map-track-line" style="left:12%; top:25%; width:6px; height:45%;"></div>
+              <div class="map-track-line" style="left:12%; top:68%; width:15%; height:6px;"></div>
+              <div class="map-track-line" style="left:12%; top:79%; width:43%; height:6px;"></div>
+              <div class="map-track-line" style="left:14%; top:70%; width:6px; height:26px;"></div>
+              <div class="map-track-line" style="left:40%; top:12%; width:42%; height:6px;"></div>
+              <div class="map-track-line" style="left:54%; top:12%; width:6px; height:67%;"></div>
+              <div class="map-track-line" style="left:54%; top:47%; width:40%; height:6px;"></div>
+              <div class="map-track-line" style="left:93%; top:27%; width:6px; height:58%;"></div>
+              <div class="map-track-line" style="left:83%; top:61%; width:11%; height:6px;"></div>
+            </div>
+            <div class="map-hotspots-container" id="hotspotsContainer"></div>
+          </div>
+
+          <div id="locationScanPanel" style="background:var(--bg-alt); color:var(--white); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--line); font-size:0.9rem; margin-top:1rem; min-height:95px;">
+            <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--sea); margin-bottom:0.3rem; letter-spacing:0.15em;">🛰️ CARTOGRAPHY AREA SCANNER</div>
+            <div id="scannedLocationTitle" style="font-family:var(--font-header); font-weight:bold; font-size:1.1rem; color:var(--land); margin-bottom:0.3rem;">Select a Node</div>
+            <p id="scannedLocationDesc" style="font-size:0.85rem; opacity:0.8; line-height:1.4;">Move your cursor over any active health/route network node on the map to preview, and click to scan local structural details.</p>
+          </div>
+        </div>
+      `;
+
+      const hotspotsContainer = document.getElementById('hotspotsContainer');
+      HOENN_HOTSPOTS.forEach(spot => {
+        const marker = document.createElement('div');
+        marker.className = `map-hotspot ${spot.type === 'route' ? 'rect' : ''}`;
+        marker.style.left = spot.x;
+        marker.style.top = spot.y;
+        marker.innerHTML = `<div class="map-tooltip">${spot.name}</div>`;
+
+        marker.addEventListener('mouseenter', () => {
+          document.getElementById('scannedLocationTitle').textContent = spot.name + " (Preview)";
+          document.getElementById('scannedLocationDesc').textContent = spot.desc;
+        });
+        marker.addEventListener('click', () => {
+          document.getElementById('scannedLocationTitle').textContent = "📍 " + spot.name;
+          document.getElementById('scannedLocationDesc').textContent = spot.desc;
+        });
+        hotspotsContainer.appendChild(marker);
+      });
+
+    } else {
+      modalBody.innerHTML = `
+        <div style="margin-top: 1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem; border-bottom:2px solid var(--ink);">
+            <h2 style="font-family:var(--font-header); font-weight:700; font-size:1.8rem; color:var(--land);">${region.name}</h2>
+            <span style="font-family:var(--font-mono); font-size:0.85rem; color:var(--sea); font-weight:bold;">${region.gen}</span>
+          </div>
+          
+          <div class="region-map-display">
+             <div class="pokeball" style="margin: 0 auto 10px; animation: spin 2s linear infinite;"></div>
+             <div style="text-align:center; color:rgba(255,255,255,0.4); font-family:var(--font-mono); font-size:0.8rem;">
+               SATELLITE MAP RADAR OFFLINE<br>
+               <span style="font-size:0.7rem; color:var(--sea);">Secure data protocols verified for ${region.name}</span>
+             </div>
+          </div>
+
+          <p style="font-size:0.95rem; line-height:1.6; color:var(--ink); margin-bottom:1.2rem; font-style:italic;">"${region.desc}"</p>
+          
+          <div style="background:var(--surface-dim); padding:1rem; border-radius:var(--radius-sm); border:1px dashed rgba(20,33,39,0.3); font-size:0.9rem;">
+            <div style="margin-bottom:0.4rem;"><strong style="font-family:var(--font-mono); color:var(--ink-soft);">STARTER LABELS:</strong> ${region.starters}</div>
+            <div><strong style="font-family:var(--font-mono); color:var(--ink-soft);">SIGNATURE IDENTIFICATION:</strong> ${region.feature}</div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function closeModal(){
+    modalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if(e.target === modalOverlay) closeModal(); });
+
+  let searchDebounce;
+  searchEl.addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      currentFilter.search = searchEl.value;
+      recomputeFilter();
+    }, 180);
+  });
+
+  typeFilterEl.addEventListener('change', () => {
+    currentFilter.type = typeFilterEl.value;
+    recomputeFilter();
+  });
+
+  /* NAVIGATION CONTROLLERS */
+  document.querySelectorAll('.view-tabs .tab-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-tabs .tab-pill').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      
+      btn.classList.add('active');
+      const targetView = btn.dataset.view;
+      document.getElementById(targetView).classList.add('active');
+
+      if (targetView !== 'minigamesView') {
+        stopWtpAudio();
+      }
+
+      if (targetView === 'minigamesView') {
+        if(activeGameSubTab === 'whosthat') {
+          initWhosThatPokemon();
+        } else {
+          initMemoryGame();
+        }
+      } else if (targetView === 'mapView') {
+        initRegionsMap();
+      }
+    });
+  });
+
+  document.querySelectorAll('.game-tabs .tab-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.game-tabs .tab-pill').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+      
+      btn.classList.add('active');
+      const targetGame = btn.dataset.game;
+      activeGameSubTab = targetGame; 
+      document.getElementById(targetGame + 'Game').classList.add('active');
+
+      if(targetGame === 'memory') {
+        stopWtpAudio(); 
+        initMemoryGame();
+      } else if (targetGame === 'whosthat') {
+        initWhosThatPokemon();
+      }
+    });
+  });
+
+  function initRegionsMap() {
+    const mapGrid = document.getElementById('regionsGrid');
+    mapGrid.innerHTML = ""; 
+
+    REGIONS_DATA.forEach(region => {
+      const card = document.createElement('div');
+      card.className = 'region-card';
+      card.innerHTML = `
+        <div class="region-header">
+          <span class="region-name">${region.name}</span>
+          <span class="region-gen">${region.gen}</span>
+        </div>
+        <p class="region-desc">${region.desc}</p>
+        <div class="region-meta">
+          <div><strong>Starters:</strong> ${region.starters}</div>
+          <div><strong>Key Identity:</strong> ${region.feature}</div>
+        </div>
+        <div class="region-action-hint">Click to scan interactive map 🗺️</div>
+      `;
+      
+      card.addEventListener('click', () => openRegionMapModal(region));
+      mapGrid.appendChild(card);
+    });
+  }
+
+  // --- GAME 1: Who's That Pokemon Logic ---
+  let wtpAnswer = "";
+  let currentPokemonCryUrl = ""; 
+  const wtpImg = document.getElementById('wtpImage');
+  const wtpIdLabel = document.getElementById('wtpId');
+  const wtpAudio = document.getElementById('wtpAudio');
+  const pokemonCryAudio = document.getElementById('pokemonCryAudio'); 
+  const wtpInput = document.getElementById('wtpInput');
+  const wtpMsg = document.getElementById('wtpMessage');
+  const wtpGuessBtn = document.getElementById('wtpGuessBtn');
+  const wtpNextBtn = document.getElementById('wtpNextBtn');
+
+  async function initWhosThatPokemon() {
+    wtpMsg.textContent = "";
+    wtpMsg.style.color = "";
+    wtpInput.value = "";
+    wtpInput.disabled = false;
+    wtpGuessBtn.classList.remove('hidden');
+    wtpNextBtn.classList.add('hidden');
+    
+    wtpImg.classList.add('silhouette');
+    wtpImg.classList.remove('loaded'); 
+
+    const randomId = Math.floor(Math.random() * 1025) + 1;
+    wtpIdLabel.textContent = `#${pad(randomId)}`;
+
+    try {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+      const data = await res.json();
+      wtpAnswer = data.name.toLowerCase();
+      
+      currentPokemonCryUrl = `https://play.pokemonshowdown.com/audio/cries/${wtpAnswer}.mp3`;
+      wtpImg.src = artworkUrl(randomId);
+      
+      wtpImg.onload = () => {
+        wtpImg.classList.add('loaded');
+      };
+
+      setTimeout(() => {
+        playWtpSound();
+      }, 400);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function playWtpSound() {
+    if (activeGameSubTab === "whosthat" && document.getElementById('minigamesView').classList.contains('active')) {
+      wtpAudio.currentTime = 0;
+      wtpAudio.play().catch(err => console.log("Interaction required for audio"));
+    }
+  }
+
+  function stopWtpAudio() {
+    wtpAudio.pause();
+    wtpAudio.currentTime = 0;
+  }
+
+  function handleWtpGuess() {
+    const userGuess = wtpInput.value.trim().toLowerCase();
+    if(!userGuess) return;
+
+    wtpImg.classList.remove('silhouette');
+    wtpInput.disabled = true;
+    wtpGuessBtn.classList.add('hidden');
+    wtpNextBtn.classList.remove('hidden');
+
+    if(userGuess === wtpAnswer || userGuess === wtpAnswer.replace('-', ' ')) {
+      wtpMsg.textContent = `🎉 Correct! It's ${capitalize(wtpAnswer)}!`;
+      wtpMsg.style.color = "#4caf50";
+      
+      if (currentPokemonCryUrl) {
+        pokemonCryAudio.src = currentPokemonCryUrl;
+        pokemonCryAudio.currentTime = 0;
+        setTimeout(() => {
+          if (activeGameSubTab === "whosthat") {
+            pokemonCryAudio.play().catch(err => console.log("Error playing Pokémon cry"));
+          }
+        }, 300);
+      }
+    } else {
+      wtpMsg.textContent = `❌ Incorrect! It's ${capitalize(wtpAnswer)}!`;
+      wtpMsg.style.color = "#ef5350";
+    }
+  }
+
+  document.getElementById('wtpPlaySound').addEventListener('click', playWtpSound);
+  wtpGuessBtn.addEventListener('click', handleWtpGuess);
+  wtpNextBtn.addEventListener('click', initWhosThatPokemon);
+
+
+  // --- GAME 2: Memory Card Match Logic ---
+  const memGrid = document.getElementById('memoryGrid');
+  const memMovesLabel = document.getElementById('memMoves');
+  const memPairsLabel = document.getElementById('memPairs');
+  const memWinScreen = document.getElementById('memoryWin');
+  const memFinalMoves = document.getElementById('memFinalMoves');
+
+  let memoryMoves = 0;
+  let memoryPairs = 0;
+  let firstFlippedCard = null;
+  let secondFlippedCard = null;
+  let lockGameBoard = false;
+
+  function initMemoryGame() {
+    memGrid.innerHTML = "";
+    memoryMoves = 0;
+    memoryPairs = 0;
+    firstFlippedCard = null;
+    secondFlippedCard = null;
+    lockGameBoard = false;
+    
+    memMovesLabel.textContent = "0";
+    memPairsLabel.textContent = "0/8";
+    memWinScreen.classList.add('hidden');
+
+    const uniqueIds = new Set();
+    while(uniqueIds.size < 8) {
+      uniqueIds.add(Math.floor(Math.random() * 151) + 1);
+    }
+    
+    const cardPool = [...uniqueIds, ...uniqueIds]; 
+    cardPool.sort(() => Math.random() - 0.5);       
+
+    cardPool.forEach(id => {
+      const tile = document.createElement('div');
+      tile.className = 'memory-tile';
+      tile.dataset.pokemonId = id;
+
+      tile.innerHTML = `
+        <div class="memory-card-back"></div>
+        <div class="memory-card-front">
+          <img src="${artworkUrl(id)}" alt="Pokemon">
+        </div>
+      `;
+
+      tile.addEventListener('click', handleCardFlip);
+      memGrid.appendChild(tile);
+    });
+  }
+
+  function handleCardFlip() {
+    if(lockGameBoard) return;
+    if(this === firstFlippedCard) return;
+
+    this.classList.add('flipped');
+
+    if(!firstFlippedCard) {
+      firstFlippedCard = this;
+      return;
+    }
+
+    secondFlippedCard = this;
+    memoryMoves++;
+    memMovesLabel.textContent = memoryMoves;
+
+    checkForMatch();
+  }
+
+  function checkForMatch() {
+    let isMatch = firstFlippedCard.dataset.pokemonId === secondFlippedCard.dataset.pokemonId;
+    if(isMatch) {
+      disableCards();
+    } else {
+      unflipCards();
+    }
+  }
+
+  function disableCards() {
+    firstFlippedCard.removeEventListener('click', handleCardFlip);
+    secondFlippedCard.removeEventListener('click', handleCardFlip);
+    
+    memoryPairs++;
+    memPairsLabel.textContent = `${memoryPairs}/8`;
+
+    resetMatchTracker();
+
+    if(memoryPairs === 8) {
+      setTimeout(() => {
+        memFinalMoves.textContent = memoryMoves;
+        memWinScreen.classList.remove('hidden');
+      }, 500);
+    }
+  }
+
+  function unflipCards() {
+    lockGameBoard = true;
+    setTimeout(() => {
+      firstFlippedCard.classList.remove('flipped');
+      secondFlippedCard.classList.remove('flipped');
+      resetMatchTracker();
+    }, 1000);
+  }
+
+  function resetMatchTracker() {
+    [firstFlippedCard, secondFlippedCard] = [null, null];
+    lockGameBoard = false;
+  }
+
+  document.getElementById('memReset').addEventListener('click', initMemoryGame);
+  document.getElementById('memPlayAgain').addEventListener('click', initMemoryGame);
+
+  async function init(){
+    try {
+      await fetchMasterList();
+      populateTypeFilter();
+      filteredList = masterList;
+      resetGrid();
+    } catch(err){
+      gridEl.innerHTML = `<div class="empty-state">Couldn't reach the Pokédex network. Please check your connection and refresh.</div>`;
+      console.error(err);
+    }
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
