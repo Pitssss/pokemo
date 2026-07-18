@@ -9,19 +9,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Clash+Display:wght@600;700&family=Space+Mono:wght@400;700&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* --- duotone: land vs sea --- */
-    --land: #ffcb05; /* Pokemon Yellow */
-    --land-dim: #c7a008;
-    --sea: #3b4cca; /* Pokemon Blue */
-    --sea-dim: #2a3a9d;
-    --bg: #0a1a24;
-    --bg-alt: #0e2632;
-    --surface: #f2ead9;
-    --surface-dim: #e7dcc4;
-    --ink: #142127;
-    --ink-soft: #4a5a61;
-    --line: rgba(242,234,217,0.12);
-    --white: #fbf8f1;
+    /* --- Pokédex Device Theme: red casing / charcoal / cyan screen glow --- */
+    --land: #00fffa;        /* cyan glow accent (screen light, radar, highlights) */
+    --land-dim: #00b8b5;
+    --sea: #dc0a2d;         /* Pokédex Red */
+    --sea-dim: #90061a;     /* Deep Crimson */
+    --charcoal: #212121;
+    --charcoal-2: #171717;
+    --gold: #ffd400;
+    --jewel-red: #ff3b3b;
+    --jewel-yellow: #ffd400;
+    --jewel-green: #24e07a;
+
+    --bg: #140406;
+    --bg-alt: #1c0a0d;
+    --surface: #eef4f5;     /* light screen-glass content surface, kept for legibility */
+    --surface-dim: #dbe4e6;
+    --ink: #10181a;
+    --ink-soft: #46585d;
+    --line: rgba(0,255,250,0.16);
+    --white: #f5fbfb;
 
     --font-display: 'Press Start 2P', monospace;
     --font-header: 'Clash Display', sans-serif;
@@ -38,9 +45,9 @@
   body{
     font-family: var(--font-body);
     background:
-      radial-gradient(ellipse at 15% -10%, rgba(217,99,59,0.16), transparent 45%),
-      radial-gradient(ellipse at 85% 0%, rgba(47,143,196,0.20), transparent 45%),
-      var(--bg);
+      radial-gradient(ellipse at 15% -10%, rgba(220,10,45,0.28), transparent 45%),
+      radial-gradient(ellipse at 85% 0%, rgba(0,255,250,0.10), transparent 45%),
+      linear-gradient(180deg, var(--bg) 0%, #0c0304 100%);
     color: var(--white);
     min-height: 100vh;
     padding-bottom: 4rem;
@@ -52,49 +59,128 @@
 
   ::selection{ background: var(--sea); color: var(--white); }
 
+  /* ================= HEADER / PHYSICAL LID CASING ================= */
   header.hero{
     position: relative;
-    padding: 3.2rem 1.5rem 2.2rem;
+    padding: 1.6rem 1.5rem 2.4rem;
     text-align: center;
     overflow: hidden;
-    border-bottom: 1px solid var(--line);
+    background:
+      linear-gradient(180deg, #ea1338 0%, var(--sea) 38%, var(--sea-dim) 100%);
+    border-bottom: 6px solid var(--charcoal-2);
+    box-shadow:
+      inset 0 -10px 30px rgba(0,0,0,0.35),
+      inset 0 6px 0 rgba(255,255,255,0.18),
+      0 10px 30px rgba(0,0,0,0.55);
   }
   header.hero::before{
     content: "";
     position: absolute; inset: 0;
     background: repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.025) 0px,
-      rgba(255,255,255,0.025) 1px,
+      rgba(255,255,255,0.035) 0px,
+      rgba(255,255,255,0.035) 1px,
       transparent 1px,
       transparent 3px
     );
     pointer-events: none;
   }
+  /* diagonal casing seam like the classic Kanto lid hinge */
+  header.hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-6px; height:14px;
+    background: var(--charcoal-2);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%);
+    opacity:0.9;
+  }
+
+  .lid-console{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 1.1rem;
+    margin-bottom: 1.4rem;
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+  }
+
+  .lens-housing{
+    position: relative;
+    width: 74px; height: 74px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f5fbfb 0%, #bfe9ff 8%, #1090c8 34%, #063a55 62%, #021018 100%);
+    border: 5px solid var(--charcoal);
+    box-shadow:
+      0 0 0 3px rgba(255,255,255,0.15),
+      0 0 22px 4px rgba(0,255,250,0.55),
+      inset 0 0 14px rgba(0,0,0,0.6);
+    flex-shrink: 0;
+  }
+  .lens-housing::before{
+    content:"";
+    position:absolute; inset: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, rgba(255,255,255,0.9), rgba(0,255,250,0.15) 45%, transparent 70%);
+    animation: lensPulse 2.4s ease-in-out infinite;
+  }
+  .lens-housing::after{
+    content:"";
+    position:absolute; top: 14px; left: 18px;
+    width: 16px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    filter: blur(1px);
+  }
+  @keyframes lensPulse{
+    0%, 100%{ opacity: 0.55; box-shadow: 0 0 6px 2px rgba(0,255,250,0.4); }
+    50%{ opacity: 1; box-shadow: 0 0 18px 6px rgba(0,255,250,0.85); }
+  }
+
+  .jewel-lights{
+    display:flex;
+    gap: 0.55rem;
+    align-items:center;
+  }
+  .jewel{
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--charcoal);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,0.5), 0 0 8px currentColor;
+    animation: jewelBlink 2.6s ease-in-out infinite;
+  }
+  .jewel.red{ background: var(--jewel-red); color: var(--jewel-red); }
+  .jewel.yellow{ background: var(--jewel-yellow); color: var(--jewel-yellow); animation-delay: 0.3s; }
+  .jewel.green{ background: var(--jewel-green); color: var(--jewel-green); animation-delay: 0.6s; }
+  @keyframes jewelBlink{
+    0%, 100%{ opacity: 0.65; }
+    50%{ opacity: 1; }
+  }
+
+  .wordmark-wrap{ position: relative; z-index: 2; }
 
   h1.wordmark{
     font-family: var(--font-display);
-    font-size: clamp(1.4rem, 4.5vw, 2.5rem);
+    font-size: clamp(1.3rem, 4.2vw, 2.3rem);
     line-height: 1.4;
     letter-spacing: 2px;
-    margin-bottom: 0.5rem;
-    margin-top: 0.5rem;
+    margin-bottom: 0.3rem;
+    margin-top: 0.2rem;
+    color: var(--white);
   }
-  h1.wordmark .land{ 
-    color: var(--sea); 
-    text-shadow: 
-      -3px -3px 0 var(--land),  
-       3px -3px 0 var(--land),
-      -3px  3px 0 var(--land),
-       3px  3px 0 var(--land);
+  h1.wordmark .land{
+    color: var(--white);
+    text-shadow:
+      0 0 6px rgba(0,255,250,0.9),
+      0 0 16px rgba(0,255,250,0.55),
+      2px 2px 0 rgba(0,0,0,0.35);
   }
-  h1.wordmark .sea{ 
-    color: var(--sea);
-    text-shadow: 
-      -3px -3px 0 var(--land),  
-       3px -3px 0 var(--land),
-      -3px  3px 0 var(--land),
-       3px  3px 0 var(--land);
+  h1.wordmark .sea{
+    color: var(--white);
+    text-shadow:
+      0 0 6px rgba(0,255,250,0.9),
+      0 0 16px rgba(0,255,250,0.55),
+      2px 2px 0 rgba(0,0,0,0.35);
   }
   h1.wordmark .split{
     display: inline-block;
@@ -107,18 +193,20 @@
   }
 
   .subtext{
-    margin-top: 1rem;
-    color: rgba(251,248,241,0.6);
+    margin-top: 0.6rem;
+    color: rgba(255,255,255,0.82);
     font-size: 0.95rem;
     max-width: 520px;
     margin-left: auto; margin-right: auto;
     line-height: 1.6;
+    position: relative; z-index: 2;
   }
 
   .dex-count{
     font-family: var(--font-display);
     font-size: 0.8rem;
     color: var(--land);
+    text-shadow: 0 0 8px rgba(0,255,250,0.8);
   }
 
   /* ---------- tab system navigation ---------- */
@@ -127,13 +215,13 @@
     justify-content: center;
     gap: 0.75rem;
     margin: 2rem auto 1rem;
-    max-width: 600px;
+    max-width: 680px;
     padding: 0 1.5rem;
     flex-wrap: wrap;
   }
   .tab-pill {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #2a2a2a, var(--charcoal-2));
+    border: 1px solid rgba(0,255,250,0.25);
     color: var(--white);
     padding: 0.6rem 1.4rem;
     border-radius: 999px;
@@ -141,12 +229,13 @@
     font-family: var(--font-display);
     font-size: 0.65rem;
     transition: all 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
   }
   .tab-pill.active {
-    background: var(--sea);
+    background: linear-gradient(180deg, #ff2b4f, var(--sea));
     border-color: var(--land);
     color: var(--white);
-    box-shadow: 0 0 15px rgba(59, 76, 202, 0.6);
+    box-shadow: 0 0 16px rgba(220,10,45,0.75), 0 0 8px rgba(0,255,250,0.35);
   }
   .view {
     display: none;
@@ -155,7 +244,7 @@
     display: block;
   }
 
-  /* ---------- controls ---------- */
+  /* ---------- controls (metallic selector dial style) ---------- */
   .controls{
     position: sticky;
     top: 14px;
@@ -167,11 +256,12 @@
     padding: 1rem 1.5rem;
     margin: 0 auto;
     max-width: 900px;
-    background: rgba(10,26,36,0.72);
+    background: rgba(20,4,6,0.78);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     border: 1px solid var(--line);
     border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(220,10,45,0.25), 0 8px 26px rgba(0,0,0,0.5);
   }
 
   .search-wrap{
@@ -183,7 +273,7 @@
   .search-wrap svg{
     position: absolute; left: 14px;
     width: 16px; height: 16px;
-    stroke: rgba(251,248,241,0.45);
+    stroke: rgba(0,255,250,0.6);
     pointer-events: none;
   }
   #search{
@@ -198,27 +288,87 @@
     outline: none;
     transition: border-color 0.2s ease, background 0.2s ease;
   }
-  #search::placeholder{ color: rgba(251,248,241,0.35); }
-  #search:focus{ border-color: var(--sea); background: rgba(255,255,255,0.08); }
+  #search::placeholder{ color: rgba(245,251,251,0.4); }
+  #search:focus{ border-color: var(--land); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(0,255,250,0.15); }
 
-  #typeFilter{
+  /* "hardware selector dial" look for filter dropdowns */
+  #typeFilter, #regionFilter{
     padding: 0.7rem 2.2rem 0.7rem 1.1rem;
     border-radius: 999px;
-    border: 1px solid var(--line);
-    background: rgba(255,255,255,0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23fbf8f1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+    border: 1px solid rgba(0,255,250,0.3);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%2300fffa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center,
+      linear-gradient(180deg, #3a3a3a, #1a1a1a);
     color: var(--white);
-    font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
     appearance: none;
     -webkit-appearance: none;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(0,0,0,0.4);
   }
-  #typeFilter:focus{ border-color: var(--land); }
-  #typeFilter option{ background: var(--bg-alt); color: var(--white); }
+  #typeFilter:focus, #regionFilter:focus{ border-color: var(--sea); box-shadow: 0 0 0 3px rgba(220,10,45,0.3); }
+  #typeFilter option, #regionFilter option{ background: var(--charcoal-2); color: var(--white); }
 
-  :focus-visible{ outline: 2px solid var(--sea); outline-offset: 2px; }
+  :focus-visible{ outline: 2px solid var(--land); outline-offset: 2px; }
+
+  /* ================= CRT SCREEN FRAME (shared utility) ================= */
+  .crt-frame{
+    position: relative;
+    border-radius: var(--radius);
+    border: 3px solid var(--charcoal);
+    background: #04120f;
+    box-shadow:
+      inset 0 0 40px rgba(0,0,0,0.75),
+      inset 0 0 0 2px rgba(0,255,250,0.12),
+      0 14px 34px rgba(0,0,0,0.55);
+    padding: 1.2rem;
+    overflow: hidden;
+  }
+  .crt-frame::before{
+    content:"";
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,255,250,0.05) 0px,
+      rgba(0,255,250,0.05) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+    pointer-events:none;
+  }
+  .crt-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    box-shadow: inset 0 0 60px 10px rgba(0,0,0,0.85);
+    pointer-events:none;
+  }
+  .crt-readout{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--land);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    opacity: 0.85;
+    position: relative; z-index: 2;
+  }
+  .crt-readout .blink-dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--jewel-green);
+    display:inline-block;
+    margin-right:0.4rem;
+    box-shadow: 0 0 6px var(--jewel-green);
+    animation: jewelBlink 1.4s ease-in-out infinite;
+  }
 
   /* ---------- grid ---------- */
   main{
@@ -231,22 +381,25 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
     gap: 1rem;
+    position: relative; z-index: 2;
   }
 
+  /* Pokédex cards restyled as glowing digital catalog data-slots */
   .card{
-    background: var(--surface);
+    background: linear-gradient(160deg, #10181a 0%, #0a1112 100%);
     border-radius: var(--radius);
     padding: 1rem 0.9rem 0.9rem;
     position: relative;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 1px solid rgba(0,255,250,0.18);
     animation: rise 0.4s ease backwards;
     transition: transform 0.22s cubic-bezier(.2,.8,.2,1), box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 6px 14px rgba(0,0,0,0.4);
   }
   .card:hover, .card:focus-visible{
     transform: translateY(-6px);
-    box-shadow: 0 18px 34px -14px rgba(0,0,0,0.55);
-    border-color: rgba(217,99,59,0.35);
+    box-shadow: 0 18px 34px -14px rgba(0,0,0,0.7), 0 0 18px rgba(0,255,250,0.35);
+    border-color: var(--land);
   }
   .card:active{ transform: translateY(-2px) scale(0.99); }
 
@@ -258,8 +411,9 @@
   .card .id{
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--ink-soft);
+    color: var(--land);
     letter-spacing: 0.04em;
+    opacity: 0.85;
   }
 
   .card .sprite-wrap{
@@ -269,11 +423,12 @@
     align-items: center;
     justify-content: center;
     background:
-      radial-gradient(circle at 50% 30%, rgba(217,99,59,0.10), transparent 60%),
-      var(--surface-dim);
+      radial-gradient(circle at 50% 30%, rgba(0,255,250,0.12), transparent 60%),
+      #050b0c;
     border-radius: var(--radius-sm);
     margin: 0.4rem 0 0.6rem;
     overflow: hidden;
+    border: 1px solid rgba(0,255,250,0.1);
   }
   .card .sprite-wrap img{
     width: 78%;
@@ -290,7 +445,7 @@
     font-family: var(--font-header);
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--ink);
+    color: var(--white);
     margin-bottom: 0.5rem;
   }
 
@@ -308,7 +463,7 @@
   .badge-skeleton{
     width: 44px; height: 1.1rem;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(20,33,39,0.08), rgba(20,33,39,0.15), rgba(20,33,39,0.08));
+    background: linear-gradient(90deg, rgba(0,255,250,0.06), rgba(0,255,250,0.16), rgba(0,255,250,0.06));
     background-size: 200% 100%;
     animation: shimmer 1.3s ease-in-out infinite;
   }
@@ -321,7 +476,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem 1rem;
-    color: rgba(251,248,241,0.5);
+    color: rgba(245,251,251,0.5);
     font-family: var(--font-mono);
     font-size: 0.85rem;
   }
@@ -341,8 +496,8 @@
     border-radius: 50%;
     background:
       linear-gradient(var(--white) 0 0) center/100% 34% no-repeat,
-      linear-gradient(to bottom, #ef5350 50%, var(--white) 50%);
-    border: 3px solid var(--ink);
+      linear-gradient(to bottom, var(--sea) 50%, var(--white) 50%);
+    border: 3px solid var(--charcoal);
     position: relative;
     animation: spin 0.9s linear infinite;
   }
@@ -352,12 +507,12 @@
     position: absolute; top:50%; left:50%;
     width: 12px; height: 12px;
     background: var(--white);
-    border: 3px solid var(--ink);
+    border: 3px solid var(--charcoal);
     border-radius: 50%;
     transform: translate(-50%,-50%);
   }
   @keyframes spin{ to{ transform: rotate(360deg); } }
-  .loader p{ font-family: var(--font-mono); font-size: 0.8rem; color: rgba(251,248,241,0.55); }
+  .loader p{ font-family: var(--font-mono); font-size: 0.8rem; color: rgba(245,251,251,0.55); }
 
   /* ---------- manual pagination styles ---------- */
   .pagination-wrap {
@@ -368,8 +523,8 @@
     margin-top: 3rem;
   }
   .page-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #2a2a2a, var(--charcoal-2));
+    border: 1px solid rgba(0,255,250,0.25);
     color: var(--white);
     padding: 0.6rem 1.5rem;
     border-radius: 999px;
@@ -379,7 +534,7 @@
     transition: all 0.2s ease;
   }
   .page-btn:hover:not(:disabled) {
-    background: var(--sea);
+    background: linear-gradient(180deg, #ff2b4f, var(--sea));
     border-color: var(--land);
   }
   .page-btn:disabled {
@@ -389,7 +544,7 @@
   .page-info {
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: rgba(251,248,241,0.6);
+    color: rgba(245,251,251,0.6);
   }
 
   /* ---------- minigames layout & styling ---------- */
@@ -405,9 +560,9 @@
     background: transparent;
   }
   .game-tabs .tab-pill.active {
-    background: #ef5350;
-    border-color: #ef5350;
-    box-shadow: 0 0 15px rgba(239, 83, 80, 0.4);
+    background: linear-gradient(180deg, #ff2b4f, var(--sea));
+    border-color: var(--sea);
+    box-shadow: 0 0 15px rgba(220,10,45,0.5);
   }
   .game-panel {
     display: none;
@@ -419,18 +574,21 @@
     display: block;
   }
 
-  /* Who's That Pokemon Styles */
+  /* Who's That Pokemon: biometric radar tracking terminal */
   .wtp-card {
-    background: var(--surface);
-    color: var(--ink);
+    background: linear-gradient(160deg, #1c1c1c, var(--charcoal-2));
+    color: var(--white);
     border-radius: var(--radius);
-    padding: 2rem;
+    padding: 1.6rem;
     text-align: center;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,255,250,0.15);
+    border: 2px solid var(--charcoal);
   }
   .wtp-stage {
-    background: radial-gradient(circle, var(--sea) 20%, var(--bg-alt) 100%);
-    border: 4px solid #ffcb05;
+    background:
+      repeating-radial-gradient(circle at center, rgba(0,255,250,0.12) 0px, rgba(0,255,250,0.12) 1px, transparent 1px, transparent 26px),
+      radial-gradient(circle, #06302c 0%, #03100e 75%);
+    border: 4px solid var(--sea);
     border-radius: var(--radius-sm);
     padding: 2rem;
     position: relative;
@@ -439,16 +597,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.7), 0 0 18px rgba(220,10,45,0.35);
+  }
+  .wtp-stage::before{
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:2px;
+    background: var(--land);
+    box-shadow: 0 0 10px 2px var(--land);
+    animation: radarSweep 2.6s linear infinite;
+  }
+  @keyframes radarSweep{
+    0%{ top:0; opacity:1; }
+    95%{ opacity:1; }
+    100%{ top:100%; opacity:0; }
+  }
+  .wtp-stage::after{
+    content:"◎ SCANNING";
+    position:absolute; bottom:8px; right:12px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--land);
+    opacity: 0.75;
   }
   .wtp-image {
     width: 160px;
     height: 160px;
     object-fit: contain;
     transition: filter 0.3s ease, opacity 0.2s ease;
-    opacity: 0; 
+    opacity: 0;
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 0 12px rgba(0,255,250,0.3));
   }
   .wtp-image.loaded {
-    opacity: 1; 
+    opacity: 1;
   }
   .silhouette {
     filter: brightness(0) invert(0);
@@ -458,8 +641,9 @@
     top: 10px;
     left: 10px;
     font-family: var(--font-mono);
-    color: rgba(255,255,255,0.4);
+    color: var(--land);
     font-size: 0.8rem;
+    z-index: 3;
   }
   .btn {
     font-family: var(--font-display);
@@ -471,13 +655,13 @@
     transition: background 0.2s, transform 0.1s;
   }
   .btn:active { transform: scale(0.97); }
-  .btn-primary { background: #ef5350; color: var(--white); }
-  .btn-primary:hover { background: #d32f2f; }
-  .btn-secondary { background: var(--sea); color: var(--white); }
-  .btn-secondary:hover { background: var(--sea-dim); }
-  .btn-ghost { background: rgba(20,33,39,0.08); color: var(--ink); }
-  .btn-ghost:hover { background: rgba(20,33,39,0.15); }
-  
+  .btn-primary { background: linear-gradient(180deg, #ff2b4f, var(--sea)); color: var(--white); }
+  .btn-primary:hover { background: var(--sea-dim); }
+  .btn-secondary { background: linear-gradient(180deg, #00e0dc, var(--land-dim)); color: #032a2a; }
+  .btn-secondary:hover { background: var(--land-dim); }
+  .btn-ghost { background: rgba(255,255,255,0.08); color: var(--white); border: 1px solid rgba(0,255,250,0.25); }
+  .btn-ghost:hover { background: rgba(0,255,250,0.12); }
+
   .wtp-guess-row {
     display: flex;
     gap: 0.5rem;
@@ -487,12 +671,15 @@
     flex: 1;
     padding: 0.6rem 1.2rem;
     border-radius: 999px;
-    border: 1px solid rgba(20,33,39,0.2);
+    border: 1px solid rgba(0,255,250,0.3);
+    background: rgba(255,255,255,0.06);
+    color: var(--white);
     font-family: var(--font-body);
     font-size: 1rem;
     outline: none;
     text-align: center;
   }
+  .wtp-input::placeholder{ color: rgba(245,251,251,0.4); }
   .wtp-message {
     font-family: var(--font-header);
     font-weight: 700;
@@ -502,33 +689,42 @@
   }
   .hidden { display: none !important; }
 
-  /* Memory Match Styles */
+  /* Memory Match: cybernetic table overlay */
   .memory-card-wrap {
-    background: var(--bg-alt);
-    border: 1px solid var(--line);
+    background: linear-gradient(160deg, #12181a, #060b0c);
+    border: 2px solid var(--charcoal);
     border-radius: var(--radius);
     padding: 1.5rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,255,250,0.12);
+    position: relative;
+  }
+  .memory-card-wrap::before{
+    content:"";
+    position:absolute; inset:10px;
+    border: 1px solid rgba(0,255,250,0.15);
+    border-radius: calc(var(--radius) - 6px);
+    pointer-events:none;
   }
   .memory-stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    background: rgba(255,255,255,0.03);
+    background: rgba(0,255,250,0.05);
     padding: 0.6rem 1rem;
     border-radius: var(--radius-sm);
+    border: 1px solid rgba(0,255,250,0.12);
   }
   .memory-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  .memory-stat .val { font-family: var(--font-display); font-size: 1rem; color: var(--land); margin-bottom: 0.2rem; }
-  .memory-stat .lab { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: rgba(251,248,241,0.4); }
+  .memory-stat .val { font-family: var(--font-display); font-size: 1rem; color: var(--land); margin-bottom: 0.2rem; text-shadow: 0 0 8px rgba(0,255,250,0.6); }
+  .memory-stat .lab { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: rgba(245,251,251,0.45); }
   .memory-stats .btn-ghost { color: var(--white); background: rgba(255,255,255,0.05); border: 1px solid var(--line); }
   .memory-stats .btn-ghost:hover { background: rgba(255,255,255,0.1); }
-  
+
   .memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -556,16 +752,18 @@
     justify-content: center;
   }
   .memory-card-back {
-    background: #3b4cca;
-    border: 2px solid #ffcb05;
-    background-image: radial-gradient(circle, var(--white) 15%, transparent 16%),
-                      radial-gradient(circle, var(--ink) 22%, transparent 23%),
-                      linear-gradient(to bottom, #ef5350 48%, var(--ink) 48%, var(--ink) 52%, var(--white) 52%);
+    background: linear-gradient(160deg, var(--sea), var(--sea-dim));
+    border: 2px solid var(--charcoal);
+    background-image:
+      radial-gradient(circle, var(--land) 10%, transparent 11%),
+      linear-gradient(160deg, #ff2b4f, var(--sea-dim));
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.5);
   }
   .memory-card-front {
     background: var(--surface);
     transform: rotateY(180deg);
     padding: 10%;
+    border: 2px solid var(--land);
   }
   .memory-card-front img {
     width: 100%;
@@ -576,8 +774,8 @@
     text-align: center;
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(76,175,80,0.15);
-    border: 1px solid #4caf50;
+    background: rgba(36,224,122,0.12);
+    border: 1px solid var(--jewel-green);
     border-radius: var(--radius-sm);
   }
   .memory-win p { font-family: var(--font-header); font-weight:700; font-size: 1.1rem; margin-bottom: 0.8rem; }
@@ -595,7 +793,7 @@
     margin-top: 1.5rem;
   }
   .region-card {
-    background: rgba(255,255,255,0.03);
+    background: linear-gradient(160deg, #12181a, #070d0e);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -607,9 +805,9 @@
   }
   .region-card:hover {
     transform: translateY(-4px);
-    background: rgba(255,255,255,0.06);
-    border-color: var(--sea);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    background: linear-gradient(160deg, #182123, #0a1213);
+    border-color: var(--land);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 16px rgba(0,255,250,0.25);
   }
   .region-header {
     display: flex;
@@ -623,21 +821,22 @@
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--land);
+    text-shadow: 0 0 8px rgba(0,255,250,0.4);
   }
   .region-gen {
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: var(--sea);
+    color: var(--gold);
     text-transform: uppercase;
   }
   .region-desc {
     font-size: 0.88rem;
     line-height: 1.5;
-    color: rgba(251,248,241,0.7);
+    color: rgba(245,251,251,0.72);
   }
   .region-meta {
     margin-top: auto;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.35);
     padding: 0.6rem;
     border-radius: var(--radius-sm);
     font-size: 0.8rem;
@@ -657,27 +856,42 @@
   .region-action-hint {
     font-family: var(--font-mono);
     font-size: 0.68rem;
-    color: var(--sea);
+    color: var(--land);
     text-align: right;
     margin-top: 0.2rem;
     letter-spacing: 0.05em;
   }
 
-  /* FULL PURE HTML/CSS DYNAMIC HOENN ENGINE RETRO MAP */
+  /* FULL PURE HTML/CSS DYNAMIC HOENN ENGINE RETRO MAP — wrapped in topography scan viewframe */
+  .map-scan-viewframe{
+    position: relative;
+    border-radius: var(--radius);
+    border: 3px solid var(--charcoal);
+    padding: 0.9rem;
+    background: linear-gradient(160deg, #10181a, #060b0c);
+    box-shadow: inset 0 0 0 1px rgba(0,255,250,0.15), 0 14px 30px rgba(0,0,0,0.5);
+  }
   .interactive-map-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: var(--radius-sm);
-    border: 3px solid #1c3644;
-    background: #5080c8; 
-    background-image: 
+    border: 3px solid #051a14;
+    background: #5080c8;
+    background-image:
       radial-gradient(farthest-corner at 0% 20%, #70c860 0%, #58b048 60%, transparent 61%),
       radial-gradient(farthest-corner at 70% 10%, #7dcf6d 0%, #58b048 45%, transparent 46%),
       radial-gradient(circle at 85% 75%, #a8c850 0%, #68b048 20%, transparent 22%),
       radial-gradient(circle at 45% 85%, #68b048 0%, #58b048 15%, transparent 17%);
     overflow: hidden;
     box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+  }
+  .interactive-map-wrapper::after{
+    content:"";
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(to bottom, rgba(0,255,250,0.06) 0px, rgba(0,255,250,0.06) 1px, transparent 1px, transparent 4px);
+    pointer-events:none;
+    mix-blend-mode: overlay;
   }
 
   .map-route-layer {
@@ -701,7 +915,7 @@
     position: absolute;
     width: 26px;
     height: 26px;
-    background: #c83838; 
+    background: var(--sea);
     border: 3px solid #ffffff;
     border-radius: 50%;
     cursor: pointer;
@@ -712,15 +926,15 @@
 
   .map-hotspot:hover {
     transform: scale(1.3);
-    background: #ffcb05; 
-    box-shadow: 0 0 12px #ffcb05;
+    background: var(--land);
+    box-shadow: 0 0 12px var(--land);
   }
 
   .map-hotspot.rect {
     width: 36px;
     height: 20px;
     border-radius: 6px;
-    background: #a85838; 
+    background: #a85838;
   }
 
   .map-tooltip {
@@ -728,7 +942,7 @@
     bottom: 140%;
     left: 50%;
     transform: translateX(-50%) translateY(5px);
-    background: #142127;
+    background: var(--charcoal-2);
     color: #fbf8f1;
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
@@ -740,7 +954,7 @@
     transition: opacity 0.2s, transform 0.2s;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     z-index: 20;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(0,255,250,0.3);
   }
 
   .map-tooltip::after {
@@ -751,7 +965,7 @@
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
-    border-color: #142127 transparent transparent transparent;
+    border-color: var(--charcoal-2) transparent transparent transparent;
   }
 
   .map-hotspot:hover .map-tooltip {
@@ -762,9 +976,9 @@
   .region-map-display {
     width: 100%;
     border-radius: var(--radius-sm);
-    border: 2px solid rgba(20,33,39,0.1);
+    border: 2px solid rgba(0,255,250,0.15);
     margin: 1rem 0;
-    background: #142127;
+    background: #04120f;
     min-height: 220px;
     display: flex;
     align-items: center;
@@ -781,7 +995,7 @@
   /* ---------- modal ---------- */
   .modal-overlay{
     position: fixed; inset: 0;
-    background: rgba(6,14,20,0.72);
+    background: rgba(6,2,3,0.78);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     display: flex;
@@ -799,14 +1013,14 @@
     background: var(--surface);
     color: var(--ink);
     width: 100%;
-    max-width: 580px; 
+    max-width: 580px;
     max-height: 92vh;
     overflow-y: auto;
     border-radius: 22px;
     position: relative;
     transform: translateY(18px) scale(0.97);
     transition: transform 0.25s cubic-bezier(.2,.8,.2,1);
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+    box-shadow: 0 0 0 6px var(--charcoal), 0 0 0 9px var(--sea), 0 30px 60px -20px rgba(0,0,0,0.7);
   }
   .modal-overlay.open .modal{ transform: translateY(0) scale(1); }
 
@@ -832,6 +1046,7 @@
     position: relative;
     border-radius: 22px 22px 0 0;
     min-height: 240px;
+    background: linear-gradient(180deg, rgba(0,255,250,0.08), transparent 60%);
   }
   .modal-hero .id{
     font-family: var(--font-mono);
@@ -925,7 +1140,7 @@
     text-align: center;
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    color: rgba(251,248,241,0.3);
+    color: rgba(245,251,251,0.35);
     margin-top: 3.5rem;
     letter-spacing: 0.05em;
   }
@@ -934,14 +1149,26 @@
     .controls{ border-radius: 20px; top: 10px; }
     .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.7rem; }
     .memory-grid { gap: 0.4rem; }
+    .lens-housing{ width: 56px; height: 56px; }
   }
+
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <h1 class="wordmark"><span class="land">Poké</span><span class="split"></span><span class="sea">dex</span></h1>
-  <p class="subtext">A modern interface of the entire Pokeverse  and beyond. Cataloged:1,025 <span class="dex-count" id="dexCount">0</span> species. <span id="dexRange" style="display:block; font-size:0.75rem; opacity:0.6; margin-top:0.3rem;"></span></p>
+  <div class="lid-console">
+    <div class="lens-housing" aria-hidden="true"></div>
+    <div class="jewel-lights" aria-hidden="true">
+      <span class="jewel red"></span>
+      <span class="jewel yellow"></span>
+      <span class="jewel green"></span>
+    </div>
+  </div>
+  <div class="wordmark-wrap">
+    <h1 class="wordmark"><span class="land">Poké</span><span class="split"></span><span class="sea">dex</span></h1>
+    <p class="subtext">A modern interface of the entire Pokeverse  and beyond. Cataloged:1,025 <span class="dex-count" id="dexCount">0</span> species. <span id="dexRange" style="display:block; font-size:0.75rem; opacity:0.6; margin-top:0.3rem;"></span></p>
+  </div>
 </header>
 
 <nav class="tab-group view-tabs">
@@ -963,8 +1190,11 @@
   </div>
 
   <main>
-    <div class="grid" id="grid"></div>
-    
+    <div class="crt-frame">
+      <div class="crt-readout"><span><span class="blink-dot"></span>LIVE DEX FEED</span><span>NATIONAL DEX</span></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
     <!-- New Manual Pagination UI Block -->
     <div class="pagination-wrap" id="paginationController">
       <button class="page-btn" id="prevPageBtn" type="button">← Back</button>
@@ -1022,8 +1252,11 @@
 <!-- REGIONS MAP TAB -->
 <div id="mapView" class="view">
   <div class="regions-container">
-    <div class="regions-grid" id="regionsGrid">
-      <!-- Generated via JS -->
+    <div class="map-scan-viewframe">
+      <div class="crt-readout"><span><span class="blink-dot"></span>TOPOGRAPHY SCANNER ONLINE</span><span>REGIONS: 9</span></div>
+      <div class="regions-grid" id="regionsGrid">
+        <!-- Generated via JS -->
+      </div>
     </div>
   </div>
 </div>
